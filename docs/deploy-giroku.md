@@ -4,13 +4,54 @@
 
 紹介・SEO 入口: `https://ai-master.jp/tools/ai-giroku/`
 
+リポジトリ: `https://github.com/takkenshiken2026-sudo/kaigi-giroku`
+
+## 方式 A — Fly.io（推奨・設定済み）
+
+`Dockerfile` と `fly.toml` を同梱。GitHub Actions（`.github/workflows/fly-deploy.yml`）でもデプロイ可能。
+
+### 1. Fly.io にログイン
+
+```bash
+export PATH="$HOME/.fly/bin:$PATH"
+fly auth login
+```
+
+### 2. 初回デプロイ
+
+```bash
+cd ~/Projects/kaigi-giroku
+fly apps create kaigi-giroku   # 未作成の場合
+fly deploy
+```
+
+### 3. GitHub Actions で自動デプロイ（任意）
+
+```bash
+fly tokens create deploy -x 999999h
+gh secret set FLY_API_TOKEN --repo takkenshiken2026-sudo/kaigi-giroku
+```
+
+`main` への push で自動デプロイされます。
+
+### 4. カスタムドメイン
+
+```bash
+fly certs add giroku.ai-master.jp
+fly certs show giroku.ai-master.jp
+```
+
+表示された DNS 指示に従い、ムームードメインでレコードを追加します。
+
+## 方式 B — 自前 VPS
+
 ## 1. DNS
 
-ドメイン `ai-master.jp` の DNS 管理で CNAME を追加:
+ドメイン `ai-master.jp` の DNS 管理（ムームードメイン）で CNAME を追加:
 
 | 名前 | 種別 | 値 |
 |------|------|-----|
-| `giroku` | CNAME | サーバーのホスト名（例: `vps.example.com`） |
+| `giroku` | CNAME | Fly.io の場合は `kaigi-giroku.fly.dev` または証明書画面の指示値 |
 
 ## 2. サーバー要件
 
