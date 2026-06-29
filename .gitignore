@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+.env
+.venv/
+venv/
+.DS_Store
+uploads/
+*.mp3
+!samples/*.mp3
+!static/sample-audio.mp3
+*.wav
+*.m4a
+*.webm
+*.ogg
