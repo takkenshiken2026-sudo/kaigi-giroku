@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: kaigi-giroku
+    runtime: docker
+    plan: starter
+    region: singapore
+    healthCheckPath: /
+    envVars:
+      - key: SITE_URL
+        value: https://kaigi-giroku.onrender.com
+      - key: WHISPER_MODEL
+        value: medium
+      - key: WHISPER_DEVICE
+        value: cpu
+      - key: WHISPER_COMPUTE_TYPE
+        value: int8
+      - key: OLLAMA_WARMUP
+        value: "0"
+    autoDeploy: true

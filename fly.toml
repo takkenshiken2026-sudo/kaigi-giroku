@@ -23,6 +23,6 @@ primary_region = 'nrt'
     soft_limit = 5
 
 [[vm]]
-  memory = '4gb'
+  memory = '2gb'
   cpu_kind = 'shared'
   cpus = 2

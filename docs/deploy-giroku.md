@@ -6,46 +6,61 @@
 
 リポジトリ: `https://github.com/takkenshiken2026-sudo/kaigi-giroku`
 
-## 方式 A — Fly.io（推奨・設定済み）
+## 方式 A — Fly.io（クラウド・設定済み）
 
 `Dockerfile` と `fly.toml` を同梱。GitHub Actions（`.github/workflows/fly-deploy.yml`）でもデプロイ可能。
 
-### 1. Fly.io にログイン
+**注意:** 2026年6月時点、Fly.io は初回マシン作成前に **クレジットカード登録** が必要です。
 
 ```bash
 export PATH="$HOME/.fly/bin:$PATH"
 fly auth login
-```
-
-### 2. 初回デプロイ
-
-```bash
-cd ~/Projects/kaigi-giroku
-fly apps create kaigi-giroku   # 未作成の場合
-fly deploy
-```
-
-### 3. GitHub Actions で自動デプロイ（任意）
-
-```bash
-fly tokens create deploy -x 999999h
-gh secret set FLY_API_TOKEN --repo takkenshiken2026-sudo/kaigi-giroku
-```
-
-`main` への push で自動デプロイされます。
-
-### 4. カスタムドメイン
-
-```bash
+fly deploy   # 課金情報登録後
 fly certs add giroku.ai-master.jp
-fly certs show giroku.ai-master.jp
 ```
 
-表示された DNS 指示に従い、ムームードメインでレコードを追加します。
+## 方式 B — Mac 常時起動 + Cloudflare Tunnel（現在稼働中）
 
-## 方式 B — 自前 VPS
+ローカル Mac でサーバーを起動し、Cloudflare Tunnel で公開する方式。
 
-## 1. DNS
+### サーバー（launchd 登録済み）
+
+```bash
+# 手動起動
+cd ~/Projects/kaigi-giroku
+SITE_URL=https://giroku.ai-master.jp bash scripts/run-server.sh
+
+# 常時起動（LaunchAgent: jp.ai-master.giroku.server）
+launchctl print gui/$(id -u)/jp.ai-master.giroku.server
+```
+
+### 一時公開（クイックトンネル・検証用）
+
+URL は cloudflared 再起動で変わります。
+
+```bash
+bash scripts/run-quick-tunnel.sh
+# ログに https://xxxx.trycloudflare.com が表示される
+```
+
+### 本番ドメイン giroku.ai-master.jp（名前付きトンネル）
+
+1. Cloudflare にログイン
+
+```bash
+bash scripts/install-cloudflared.sh
+bin/cloudflared tunnel login
+bash scripts/setup-tunnel.sh
+```
+
+2. 表示された CNAME を **ムームードメイン** に追加（名前: `giroku`）
+3. トンネル起動: `bin/cloudflared tunnel run giroku`
+
+## 方式 C — Render.com
+
+`render.yaml` を同梱。Render ダッシュボードで GitHub リポジトリを接続すると Blueprint デプロイ可能（Starter プラン推奨、`medium` モデル）。
+
+## 方式 D — 自前 VPS
 
 ドメイン `ai-master.jp` の DNS 管理（ムームードメイン）で CNAME を追加:
 

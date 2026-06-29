@@ -3,6 +3,8 @@ __pycache__/
 .env
 .venv/
 venv/
+bin/
+logs/
 .DS_Store
 uploads/
 *.mp3
